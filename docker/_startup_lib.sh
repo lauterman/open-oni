@@ -50,28 +50,7 @@ setup_database() {
   /opt/openoni/manage.py migrate
 }
 
-wait_for_solr() {
-  echo "Waiting for Solr" >&2
-  local max=15
-  local tries=0
-  while true; do
-    local status=$(curl -s -o /dev/null -w "%{http_code}" http://solr:8983/api/cores/openoni)
-    if [[ $status == 200 ]]; then
-      return
-    fi
-    let tries++
-    if [[ $tries == $max ]]; then
-      echo "ERROR: Unable to connect to solr after $max attempts" >&2
-      exit 2
-    fi
-
-    echo "Looks like we're still waiting for Solr ... 5 more seconds ... retry $tries of $max"
-    sleep 5
-  done
-}
-
 setup_index() {
-  wait_for_solr
   echo "Installing Solr configs" >&2
   source ENV/bin/activate
   /opt/openoni/manage.py setup_index
@@ -96,8 +75,9 @@ prep_webserver() {
 
   echo "-------" >&2
   echo "Running collectstatic" >&2
-  # Django needs write access to STATIC_ROOT
+  # Django needs write access to STATIC_ROOT and the log directory
   chown -R www-data:www-data /opt/openoni/static/compiled
+  chown -R www-data:www-data /opt/openoni/log
   /opt/openoni/manage.py collectstatic --noinput
 
   # Remove any pre-existing PID file which prevents Apache from starting thus

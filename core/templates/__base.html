@@ -17,9 +17,6 @@
       <link rel="search" href="{% url 'openoni_search_pages_opensearch' %}"
         type="application/opensearchdescription+xml"
         title="{{ site_title }} Page Search" />
-      <link rel="search" href="{% url 'openoni_search_titles_opensearch' %}"
-        type="application/opensearchdescription+xml"
-        title="{{ site_title }} Title Search" />
     {% endblock head_opensearch %}
 
     {% block head_page_meta %}
@@ -57,7 +54,7 @@
   {% endblock head_all %}
   </head>
 
-  <body role="document">
+  <body>
     {% block body_content %}
       <header class="site_header">
         {# Skip link before all other content #}
@@ -130,14 +127,10 @@
 
                 {% block navbar_search %}
                 <form class="form-inline navbar-form navbar-right" method="get"
-                  action="{% url 'openoni_search_pages_results' %}">
+                  action="{% url 'openoni_search_pages_results' %}" role="search">
                   <div class="form-group">
                     {{ city_form.city }}
-                    <input type="hidden" name="rows" id="rows" alt="rows"
-                      value="20">
-                    <input type="hidden" name="searchType" alt="searchType"
-                      value="basic">
-                    <input class="form-control" type="text" name="proxtext"
+                    <input class="form-control" type="text" name="proxtext" aria-label="Search words"
                       placeholder="search words">
                   </div>
 
